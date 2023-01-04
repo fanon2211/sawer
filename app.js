@@ -1,44 +1,42 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const { json } = require('body-parser')
-const port = 3000
-const cors = require("cors");
+const express = require('express');
+const app = express();
 const http = require('http');
-const server = http.createServer(app);
-const { Server } = require('socket.io')
+var https = require('https');
+var fs = require( 'fs' );
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://streamelements.com/overlay/63b3d6bd6a768369caae9643/o9ytKLB5kjfjyLFfCaUTQ0n9Ku61qGzNomCbeyPeHWht6zrM');
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next();
+});
+
+const server = http.createServer(app);
+
+const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: "*"
+    origin: false
   }
 });
 
-var corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200 // For legacy browser support
-}
 
-app.use(cors(corsOptions));
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
-app.use(express.json())
 
-app.post('/', function(request, response) {
+app.post('/', function(request, response){
   console.log(request.body)
+  console.log(response.body)
+  response.send('ok')
 })
 
-app.get('/', function(request, response) {
-}) 
-
-
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+})
 
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('a user connected normal namespace');
 });
 
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+server.listen(3000, () => {
+  console.log(' - listening on *:3000');
+});
